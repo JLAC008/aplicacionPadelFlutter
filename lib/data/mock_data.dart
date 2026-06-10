@@ -839,6 +839,116 @@ AppUser currentAppUser = AppUser(
   avatarUrl: pJuan.avatarUrl,
 );
 
+// ───────────────────────── TOURNAMENT / SEASONS ─────────────────────────
+final List<Season> mockSeasons = [
+  Season(
+    id: 's1',
+    name: 'Temporada 1 - 2026',
+    startDate: DateTime(2026, 1, 15),
+    endDate: DateTime(2026, 6, 30),
+    ligas: [],
+    allMatches: [],
+    jornadaDeadlines: {
+      1: DateTime(2026, 1, 22),
+      2: DateTime(2026, 2, 5),
+      3: DateTime(2026, 2, 19),
+      4: DateTime(2026, 3, 5),
+    },
+  ),
+];
+
+Season mockCurrentSeason = mockSeasons.first;
+
+final List<TournamentRegistration> mockRegistrations = [
+  TournamentRegistration(
+    id: 'reg1',
+    seasonId: 's1',
+    teamName: 'Juan & Pedro',
+    player1: pJuan,
+    player2: pPedro,
+    status: RegistrationStatus.accepted,
+    registeredAt: DateTime(2026, 1, 10),
+  ),
+  TournamentRegistration(
+    id: 'reg2',
+    seasonId: 's1',
+    teamName: 'Jaime & Marcos',
+    player1: pJaime,
+    player2: pMarcos,
+    status: RegistrationStatus.accepted,
+    registeredAt: DateTime(2026, 1, 11),
+  ),
+  TournamentRegistration(
+    id: 'reg3',
+    seasonId: 's1',
+    teamName: 'Pam & Bere',
+    player1: pPam,
+    player2: Player(
+      id: 'p10',
+      name: 'Bere',
+      level: 'Avanzado',
+      liga: 'Liga Peso Pesado',
+      padelBandScore: 6.5,
+      padelBandRank: 10,
+      avatarUrl: 'https://images.pexels.com/photos/2380794/pexels-photo-2380794.jpeg?auto=compress&cs=tinysrgb&w=150',
+      availability: [Availability.evening],
+    ),
+    status: RegistrationStatus.accepted,
+    registeredAt: DateTime(2026, 1, 12),
+  ),
+  TournamentRegistration(
+    id: 'reg4',
+    seasonId: 's1',
+    teamName: 'Carlos & Maria',
+    player1: Player(
+      id: 'p6',
+      name: 'Carlos',
+      level: 'Avanzado',
+      liga: 'Liga Peso Pesado',
+      padelBandScore: 7.4,
+      padelBandRank: 6,
+      avatarUrl: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150',
+      availability: [Availability.evening, Availability.weekend],
+    ),
+    player2: Player(
+      id: 'p7',
+      name: 'Maria',
+      level: 'Avanzado',
+      liga: 'Liga Peso Pesado',
+      padelBandScore: 7.2,
+      padelBandRank: 7,
+      avatarUrl: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150',
+      availability: [Availability.afternoon],
+    ),
+    status: RegistrationStatus.accepted,
+    registeredAt: DateTime(2026, 1, 13),
+  ),
+  TournamentRegistration(
+    id: 'reg5',
+    seasonId: 's1',
+    teamName: 'Los Novatos',
+    player1: Player(
+      id: 'p8',
+      name: 'Carlos B',
+      level: 'Intermedio',
+      liga: 'Liga Peso Pesado',
+      padelBandScore: 7.0,
+      padelBandRank: 8,
+      avatarUrl: 'https://images.pexels.com/photos/157675/fashion-men-s-individuality-personality-157675.jpeg?auto=compress&cs=tinysrgb&w=150',
+      availability: [Availability.weekend],
+    ),
+    status: RegistrationStatus.pending,
+    registeredAt: DateTime(2026, 1, 20),
+    notes: 'Buscando compañero',
+  ),
+];
+
+bool currentUserRegistered(String seasonId) {
+  return mockRegistrations.any((r) =>
+      r.seasonId == seasonId &&
+      r.players.any((p) => p.id == currentUser.id));
+}
+
 // ───────────────────────── CHAT MESSAGES ─────────────────────────
 final Map<String, List<ChatMessage>> mockChats = {
   'ch1': [

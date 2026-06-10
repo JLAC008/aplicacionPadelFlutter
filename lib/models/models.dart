@@ -243,6 +243,35 @@ class CalendarEvent {
   });
 }
 
+enum RegistrationStatus { pending, accepted, rejected, cancelled }
+
+class TournamentRegistration {
+  final String id;
+  final String seasonId;
+  final String teamName;
+  final Player player1;
+  final Player? player2;
+  final Player? player3;
+  final RegistrationStatus status;
+  final DateTime registeredAt;
+  final String? notes;
+
+  TournamentRegistration({
+    required this.id,
+    required this.seasonId,
+    required this.teamName,
+    required this.player1,
+    this.player2,
+    this.player3,
+    this.status = RegistrationStatus.pending,
+    required this.registeredAt,
+    this.notes,
+  });
+
+  List<Player> get players => [player1, if (player2 != null) player2!, if (player3 != null) player3!];
+  int get playerCount => 1 + (player2 != null ? 1 : 0) + (player3 != null ? 1 : 0);
+}
+
 // ── Legacy Models ──
 class Pair {
   final String id;

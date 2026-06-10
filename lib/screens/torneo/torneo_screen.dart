@@ -1,29 +1,20 @@
 import 'package:flutter/material.dart';
 import '../../models/models.dart';
 import '../../widgets/common_widgets.dart';
+import '../../data/mock_data.dart';
 import 'draft_screen.dart';
 import 'regular_season_screen.dart';
 import 'repechage_screen.dart';
 import 'championship_screen.dart';
 
-class TorneoScreen extends StatelessWidget {
+class TorneoScreen extends StatefulWidget {
   const TorneoScreen({super.key});
 
-  static final _mockSeason = Season(
-    id: 's1',
-    name: 'Temporada 1 - 2026',
-    startDate: DateTime(2026, 1, 15),
-    endDate: DateTime(2026, 6, 30),
-    ligas: [],
-    allMatches: [],
-    jornadaDeadlines: {
-      1: DateTime(2026, 1, 22),
-      2: DateTime(2026, 2, 5),
-      3: DateTime(2026, 2, 19),
-      4: DateTime(2026, 3, 5),
-    },
-  );
+  @override
+  State<TorneoScreen> createState() => _TorneoScreenState();
+}
 
+class _TorneoScreenState extends State<TorneoScreen> {
   static final _mockEvents = [
     CalendarEvent(date: DateTime(2026, 6, 8), title: 'Lanzar el Guante', description: 'Inicio de jornada 4', type: 'challengeDay'),
     CalendarEvent(date: DateTime(2026, 6, 9), title: 'Jornada 4', description: 'Ventana de juego: Mar-Dom', type: 'playDay'),
@@ -31,8 +22,145 @@ class TorneoScreen extends StatelessWidget {
     CalendarEvent(date: DateTime(2026, 6, 22), title: 'Inicio Repesca', description: 'Wildcard Round', type: 'event'),
   ];
 
+  void _openRegistration() {
+    final partnerCtrl = TextEditingController();
+    final teamNameCtrl = TextEditingController(text: '${currentUser.name} & ');
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: kCard,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => Padding(
+        padding: EdgeInsets.only(
+          left: 24, right: 24, top: 24,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 40, height: 4,
+              decoration: BoxDecoration(color: kCardBorder, borderRadius: BorderRadius.circular(2)),
+            ),
+            const SizedBox(height: 16),
+            const Text('Inscripción al Torneo',
+                style: TextStyle(color: kGold, fontSize: 20, fontWeight: FontWeight.w900)),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: kActiveCard,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: kCardBorder),
+              ),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundColor: kCardBorder,
+                    child: Text(currentUser.name[0],
+                        style: const TextStyle(color: kGold, fontWeight: FontWeight.w900)),
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(currentUser.name,
+                          style: const TextStyle(color: kTextPrimary, fontWeight: FontWeight.w800)),
+                      Text('Tú', style: const TextStyle(color: kTextSecondary, fontSize: 12)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: partnerCtrl,
+              style: const TextStyle(color: kTextPrimary),
+              decoration: InputDecoration(
+                labelText: 'Compañero (opcional)',
+                hintText: 'Nombre de tu compañero',
+                hintStyle: const TextStyle(color: kTextSecondary),
+                labelStyle: const TextStyle(color: kTextSecondary),
+                filled: true,
+                fillColor: kBg,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: teamNameCtrl,
+              style: const TextStyle(color: kTextPrimary),
+              decoration: InputDecoration(
+                labelText: 'Nombre del equipo',
+                labelStyle: const TextStyle(color: kTextSecondary),
+                filled: true,
+                fillColor: kBg,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  final teamName = teamNameCtrl.text.trim();
+                  if (teamName.isEmpty) return;
+                  mockRegistrations.add(TournamentRegistration(
+                    id: 'reg_${DateTime.now().millisecondsSinceEpoch}',
+                    seasonId: mockCurrentSeason.id,
+                    teamName: teamName,
+                    player1: currentUser,
+                    registeredAt: DateTime.now(),
+                    notes: partnerCtrl.text.trim().isNotEmpty ? 'Compañero: ${partnerCtrl.text.trim()}' : null,
+                  ));
+                  Navigator.pop(context);
+                  setState(() {});
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Inscripción enviada. Pendiente de aprobación.'),
+                      backgroundColor: kTeal,
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kTeal,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text('Inscribirme', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  RegistrationStatus? _myStatus() {
+    final regs = mockRegistrations.where((r) =>
+        r.seasonId == mockCurrentSeason.id &&
+        r.players.any((p) => p.id == currentUser.id));
+    if (regs.isEmpty) return null;
+    return regs.first.status;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final myStatus = _myStatus();
+    final acceptedRegs = mockRegistrations.where((r) =>
+        r.seasonId == mockCurrentSeason.id &&
+        r.status == RegistrationStatus.accepted).toList();
+
     return Scaffold(
       backgroundColor: kBg,
       body: NeonScaffold(
@@ -45,11 +173,26 @@ class TorneoScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _SeasonBanner(season: _mockSeason),
+                    _SeasonBanner(season: mockCurrentSeason),
+                    const SizedBox(height: 14),
+                    _RegistrationCard(
+                      status: myStatus,
+                      teamCount: acceptedRegs.length,
+                      onRegister: _openRegistration,
+                    ),
                     const SizedBox(height: 18),
                     _PhaseTimeline(currentPhase: TournamentPhase.regularSeason),
                     const SizedBox(height: 20),
                     _PhaseActionCard(currentPhase: TournamentPhase.regularSeason),
+                    if (acceptedRegs.isNotEmpty) ...[
+                      const SizedBox(height: 24),
+                      SectionTitle('Equipos inscritos (${acceptedRegs.length})'),
+                      const SizedBox(height: 8),
+                      ...List.generate(acceptedRegs.length, (i) {
+                        final reg = acceptedRegs[i];
+                        return _RegisteredTeamCard(registration: reg);
+                      }),
+                    ],
                     const SizedBox(height: 24),
                     SectionTitle('Calendario'),
                     const SizedBox(height: 8),
@@ -60,6 +203,149 @@ class TorneoScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _RegisteredTeamCard extends StatelessWidget {
+  final TournamentRegistration registration;
+  const _RegisteredTeamCard({required this.registration});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: elegantCard(radius: 12),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 16,
+              backgroundColor: kCardBorder,
+              child: Text(registration.teamName[0],
+                  style: const TextStyle(color: kGold, fontWeight: FontWeight.w900)),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(registration.teamName,
+                      style: const TextStyle(color: kTextPrimary, fontWeight: FontWeight.w700, fontSize: 14)),
+                  Text(registration.players.map((p) => p.name).join(' · '),
+                      style: const TextStyle(color: kTextSecondary, fontSize: 11)),
+                ],
+              ),
+            ),
+            const Icon(Icons.check_circle, color: kTeal, size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RegistrationCard extends StatelessWidget {
+  final RegistrationStatus? status;
+  final int teamCount;
+  final VoidCallback onRegister;
+  const _RegistrationCard({
+    required this.status,
+    required this.teamCount,
+    required this.onRegister,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: elegantCard(radius: 16, active: status == null),
+      child: Column(
+        children: [
+          if (status == null) ...[
+            Row(
+              children: [
+                Container(
+                  width: 44, height: 44,
+                  decoration: BoxDecoration(
+                    color: kTeal.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.person_add, color: kTeal, size: 24),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Inscríbete al torneo',
+                          style: TextStyle(color: kTextPrimary, fontWeight: FontWeight.w800, fontSize: 15)),
+                      Text('$teamCount equipos apuntados',
+                          style: const TextStyle(color: kTextSecondary, fontSize: 12)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: onRegister,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kTeal,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text('Inscribirme', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ] else ...[
+            Row(
+              children: [
+                Container(
+                  width: 44, height: 44,
+                  decoration: BoxDecoration(
+                    color: status == RegistrationStatus.accepted
+                        ? Colors.greenAccent.withValues(alpha: 0.12)
+                        : Colors.orangeAccent.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    status == RegistrationStatus.accepted ? Icons.check_circle : Icons.hourglass_empty,
+                    color: status == RegistrationStatus.accepted ? Colors.greenAccent : Colors.orangeAccent,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        status == RegistrationStatus.accepted ? 'Inscrito' : 'Inscripción pendiente',
+                        style: const TextStyle(color: kTextPrimary, fontWeight: FontWeight.w800, fontSize: 15),
+                      ),
+                      Text(
+                        status == RegistrationStatus.accepted
+                            ? 'Formas parte del torneo'
+                            : 'Esperando aprobación del admin',
+                        style: const TextStyle(color: kTextSecondary, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+                StatusChip(
+                  label: status == RegistrationStatus.accepted ? 'ACEPTADO' : 'PENDIENTE',
+                  color: status == RegistrationStatus.accepted ? kTeal : Colors.orangeAccent,
+                ),
+              ],
+            ),
+          ],
+        ],
       ),
     );
   }

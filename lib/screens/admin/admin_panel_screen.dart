@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../widgets/common_widgets.dart';
 import '../../data/mock_data.dart';
 import 'gestion_pistas_screen.dart';
+import 'gestion_torneos_screen.dart';
 import '../torneo/regular_season_screen.dart';
 import '../torneo/repechage_screen.dart';
 import '../torneo/championship_screen.dart';
@@ -30,6 +31,13 @@ class AdminPanelScreen extends StatelessWidget {
               AppContent(
                 child: Column(
                   children: [
+                    _AdminCard(
+                      icon: Icons.emoji_events,
+                      title: 'Gestión de Torneos',
+                      subtitle: 'Crear temporadas, gestionar inscripciones',
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GestionTorneosScreen())),
+                    ),
+                    const SizedBox(height: 12),
                     _AdminCard(
                       icon: Icons.sports_tennis,
                       title: 'Gestión de Pistas',
