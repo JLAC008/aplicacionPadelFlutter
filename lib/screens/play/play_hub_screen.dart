@@ -3,6 +3,7 @@ import '../../widgets/common_widgets.dart';
 import '../ligas/ligas_screen.dart';
 import '../reservas/reservas_screen.dart';
 import '../retos/retos_screen.dart';
+import '../torneo/torneo_screen.dart';
 
 class PlayHubScreen extends StatelessWidget {
   const PlayHubScreen({super.key});
@@ -37,6 +38,14 @@ class PlayHubScreen extends StatelessWidget {
                       style: TextStyle(color: kTextSecondary),
                     ),
                     const SizedBox(height: 18),
+                    _PlayCard(
+                      key: const Key('play-tournament'),
+                      icon: Icons.emoji_events,
+                      title: 'Torneo PFL',
+                      subtitle: 'Draft, Liga Regular, Repesca y Championship',
+                      color: kGold,
+                      onTap: () => _open(context, const TorneoScreen()),
+                    ),
                     _PlayCard(
                       key: const Key('play-leagues'),
                       icon: Icons.emoji_events_outlined,

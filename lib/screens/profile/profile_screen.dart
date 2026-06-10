@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../widgets/common_widgets.dart';
 import '../../data/mock_data.dart';
 import '../../models/models.dart';
+import '../admin/admin_panel_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -19,7 +20,18 @@ class ProfileScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const AppTitleBar(title: 'Player Profile'),
+              AppTitleBar(
+                title: 'Player Profile',
+                actions: currentAppUser.isAdmin
+                    ? [
+                        IconButton(
+                          icon: const Icon(Icons.settings, color: kGold),
+                          tooltip: 'Panel Admin',
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminPanelScreen())),
+                        ),
+                      ]
+                    : null,
+              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(18, 8, 18, 0),
                 child: Column(

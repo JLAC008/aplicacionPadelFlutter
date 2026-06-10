@@ -5,6 +5,7 @@ import '../../widgets/common_widgets.dart';
 import '../ligas/liga_detail_screen.dart';
 import '../main_navigation.dart';
 import '../reservas/reservas_screen.dart';
+import '../torneo/torneo_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -31,6 +32,18 @@ class HomeScreen extends StatelessWidget {
                     const _HomeHero(),
                     const SizedBox(height: 14),
                     const _QuickActions(),
+                    const SizedBox(height: 14),
+                    _ActivityCard(
+                      icon: Icons.emoji_events,
+                      title: 'Torneo PFL',
+                      subtitle: 'Draft · Liga Regular · Repesca · Championship',
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const TorneoScreen(),
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     const Text(
                       'Mi actividad',

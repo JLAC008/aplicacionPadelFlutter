@@ -381,18 +381,23 @@ class PadelHeader extends StatelessWidget {
 class AppTitleBar extends StatelessWidget {
   final String title;
   final bool showBack;
+  final List<Widget>? actions;
   const AppTitleBar({
     super.key,
     this.title = 'Padel Fighter League',
     this.showBack = false,
+    this.actions,
   });
 
   @override
   Widget build(BuildContext context) {
+    final trailing = actions != null
+        ? Row(mainAxisSize: MainAxisSize.min, children: actions!)
+        : const SizedBox(width: 48);
     return SafeArea(
       bottom: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(18, 12, 18, 8),
+        padding: const EdgeInsets.fromLTRB(18, 12, 8, 8),
         child: Row(
           children: [
             if (showBack)
@@ -413,7 +418,7 @@ class AppTitleBar extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 48),
+            trailing,
           ],
         ),
       ),

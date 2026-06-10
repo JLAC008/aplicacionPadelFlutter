@@ -831,6 +831,13 @@ final List<Reserva> mockReservas = [
 // Current logged-in user (Juan)
 final Player currentUser = pJuan;
 final Pair currentUserPair = pairJuanPedro;
+AppUser currentAppUser = AppUser(
+  id: pJuan.id,
+  name: pJuan.name,
+  email: 'juan@padelfighter.test',
+  role: UserRole.user,
+  avatarUrl: pJuan.avatarUrl,
+);
 
 // ───────────────────────── CHAT MESSAGES ─────────────────────────
 final Map<String, List<ChatMessage>> mockChats = {

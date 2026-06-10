@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:ui' show ImageFilter;
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../widgets/common_widgets.dart';
+import '../../data/mock_data.dart';
+import '../../models/models.dart';
 import '../main_navigation.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,8 +15,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen>
     with SingleTickerProviderStateMixin {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController(text: 'juan@padelfighter.test');
+  final _passwordController = TextEditingController(text: '123456');
   final _emailFocusNode = FocusNode();
   final _passwordFocusNode = FocusNode();
   bool _obscurePassword = true;
@@ -56,6 +58,37 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   void _login() {
+    final email = _emailController.text.trim().toLowerCase();
+    final password = _passwordController.text.trim();
+    final isAdmin = email == 'admin' && password == 'admin';
+
+    if (isAdmin) {
+      currentAppUser = AppUser(
+        id: 'admin1',
+        name: 'Admin',
+        email: 'admin@pfl.com',
+        role: UserRole.admin,
+        avatarUrl:
+            'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150',
+      );
+    } else {
+      currentAppUser = AppUser(
+        id: currentUser.id,
+        name: currentUser.name,
+        email: email.isEmpty ? 'juan@padelfighter.test' : email,
+        role: UserRole.user,
+        avatarUrl: currentUser.avatarUrl,
+      );
+    }
+
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(isAdmin ? 'Sesión iniciada como Admin' : 'Sesión iniciada como Usuario'),
+        backgroundColor: isAdmin ? kGold : kTeal,
+        duration: const Duration(seconds: 1),
+      ),
+    );
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const MainNavigation()),
@@ -395,7 +428,22 @@ class _DemoCredentialsCard extends StatelessWidget {
               SizedBox(height: 10),
               _CredentialRow(label: 'Usuario', value: 'juan@padelfighter.test'),
               SizedBox(height: 6),
-              _CredentialRow(label: 'Contrase\u00f1a', value: '123456'),
+              _CredentialRow(label: 'Contraseña', value: '123456'),
+              SizedBox(height: 8),
+              Divider(color: kCardBorder, height: 1),
+              SizedBox(height: 8),
+              Text(
+                'Admin',
+                style: TextStyle(
+                  color: kTeal,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              SizedBox(height: 6),
+              _CredentialRow(label: 'Usuario', value: 'admin'),
+              SizedBox(height: 6),
+              _CredentialRow(label: 'Contraseña', value: 'admin'),
             ],
           ),
         ),
