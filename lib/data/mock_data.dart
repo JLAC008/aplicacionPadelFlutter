@@ -357,16 +357,258 @@ final Liga ligaPesoMedio = Liga(
   pairs: [pairAnaDiego, pairLuisSofia, pairRafaelElena],
   currentChallengerIndex: 0,
 );
+// ───────────────────────── PESO LIGERO PLAYERS ─────────────────────────
+final Player pAlex = Player(
+  id: 'p22',
+  name: 'Alex',
+  level: 'Principiante',
+  liga: 'Liga Peso Ligero',
+  padelBandScore: 5.0,
+  padelBandRank: 22,
+  avatarUrl:
+      'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150',
+  availability: [Availability.evening, Availability.weekend],
+);
+final Player pClara = Player(
+  id: 'p23',
+  name: 'Clara',
+  level: 'Principiante',
+  liga: 'Liga Peso Ligero',
+  padelBandScore: 4.8,
+  padelBandRank: 23,
+  avatarUrl:
+      'https://images.pexels.com/photos/1300402/pexels-photo-1300402.jpeg?auto=compress&cs=tinysrgb&w=150',
+  availability: [Availability.morning, Availability.weekend],
+);
+final Player pPablo = Player(
+  id: 'p24',
+  name: 'Pablo',
+  level: 'Principiante',
+  liga: 'Liga Peso Ligero',
+  padelBandScore: 4.5,
+  padelBandRank: 24,
+  avatarUrl:
+      'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=150',
+  availability: [Availability.afternoon, Availability.flexible],
+);
+final Player pLaura = Player(
+  id: 'p25',
+  name: 'Laura',
+  level: 'Principiante',
+  liga: 'Liga Peso Ligero',
+  padelBandScore: 4.2,
+  padelBandRank: 25,
+  avatarUrl:
+      'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=150',
+  availability: [Availability.morning, Availability.afternoon],
+);
+final Player pDavid = Player(
+  id: 'p26',
+  name: 'David',
+  level: 'Principiante',
+  liga: 'Liga Peso Ligero',
+  padelBandScore: 4.0,
+  padelBandRank: 26,
+  avatarUrl:
+      'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=150',
+  availability: [Availability.evening, Availability.flexible],
+);
+final Player pEva = Player(
+  id: 'p27',
+  name: 'Eva',
+  level: 'Principiante',
+  liga: 'Liga Peso Ligero',
+  padelBandScore: 3.8,
+  padelBandRank: 27,
+  avatarUrl:
+      'https://images.pexels.com/photos/1462980/pexels-photo-1462980.jpeg?auto=compress&cs=tinysrgb&w=150',
+  availability: [Availability.afternoon, Availability.weekend],
+);
+
+// ───────────────────────── PESO GALLO PLAYERS ─────────────────────────
+final Player pSergio = Player(
+  id: 'p28',
+  name: 'Sergio',
+  level: 'Principiante',
+  liga: 'Liga Peso Gallo',
+  padelBandScore: 3.5,
+  padelBandRank: 28,
+  avatarUrl:
+      'https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=150',
+  availability: [Availability.morning, Availability.weekend],
+);
+final Player pMarta = Player(
+  id: 'p29',
+  name: 'Marta',
+  level: 'Principiante',
+  liga: 'Liga Peso Gallo',
+  padelBandScore: 3.3,
+  padelBandRank: 29,
+  avatarUrl:
+      'https://images.pexels.com/photos/1587009/pexels-photo-1587009.jpeg?auto=compress&cs=tinysrgb&w=150',
+  availability: [Availability.evening, Availability.weekend],
+);
+final Player pJorge = Player(
+  id: 'p30',
+  name: 'Jorge',
+  level: 'Principiante',
+  liga: 'Liga Peso Gallo',
+  padelBandScore: 3.0,
+  padelBandRank: 30,
+  avatarUrl:
+      'https://images.pexels.com/photos/697509/pexels-photo-697509.jpeg?auto=compress&cs=tinysrgb&w=150',
+  availability: [Availability.afternoon, Availability.flexible],
+);
+final Player pNuria = Player(
+  id: 'p31',
+  name: 'Nuria',
+  level: 'Principiante',
+  liga: 'Liga Peso Gallo',
+  padelBandScore: 2.8,
+  padelBandRank: 31,
+  avatarUrl:
+      'https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=150',
+  availability: [Availability.morning, Availability.afternoon],
+);
+
+// ───────────────────────── PESO MOSCA PLAYERS ─────────────────────────
+final Player pRaul = Player(
+  id: 'p32',
+  name: 'Raúl',
+  level: 'Principiante',
+  liga: 'Liga Peso Mosca',
+  padelBandScore: 2.5,
+  padelBandRank: 32,
+  avatarUrl:
+      'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150',
+  availability: [Availability.evening, Availability.weekend],
+);
+final Player pSara = Player(
+  id: 'p33',
+  name: 'Sara',
+  level: 'Principiante',
+  liga: 'Liga Peso Mosca',
+  padelBandScore: 2.3,
+  padelBandRank: 33,
+  avatarUrl:
+      'https://images.pexels.com/photos/1065084/pexels-photo-1065084.jpeg?auto=compress&cs=tinysrgb&w=150',
+  availability: [Availability.morning, Availability.flexible],
+);
+final Player pToni = Player(
+  id: 'p34',
+  name: 'Toni',
+  level: 'Principiante',
+  liga: 'Liga Peso Mosca',
+  padelBandScore: 2.0,
+  padelBandRank: 34,
+  avatarUrl:
+      'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=150',
+  availability: [Availability.afternoon, Availability.weekend],
+);
+final Player pIris = Player(
+  id: 'p35',
+  name: 'Iris',
+  level: 'Principiante',
+  liga: 'Liga Peso Mosca',
+  padelBandScore: 1.8,
+  padelBandRank: 35,
+  avatarUrl:
+      'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=150',
+  availability: [Availability.morning, Availability.evening],
+);
+
+// ───────────────────────── NEW PAIRS ─────────────────────────
+final Pair pairAlexClara = Pair(
+  id: 'pair12',
+  player1: pAlex,
+  player2: pClara,
+  wins: 3,
+  losses: 0,
+  position: 1,
+);
+final Pair pairPabloLaura = Pair(
+  id: 'pair13',
+  player1: pPablo,
+  player2: pLaura,
+  wins: 2,
+  losses: 1,
+  position: 2,
+);
+final Pair pairDavidEva = Pair(
+  id: 'pair14',
+  player1: pDavid,
+  player2: pEva,
+  wins: 1,
+  losses: 2,
+  position: 3,
+  teamName: 'Los Novatos',
+);
+final Pair pairSergioMarta = Pair(
+  id: 'pair15',
+  player1: pSergio,
+  player2: pMarta,
+  wins: 2,
+  losses: 0,
+  position: 1,
+);
+final Pair pairJorgeNuria = Pair(
+  id: 'pair16',
+  player1: pJorge,
+  player2: pNuria,
+  wins: 0,
+  losses: 2,
+  position: 2,
+);
+final Pair pairRaulSara = Pair(
+  id: 'pair17',
+  player1: pRaul,
+  player2: pSara,
+  wins: 1,
+  losses: 0,
+  position: 1,
+);
+final Pair pairToniIris = Pair(
+  id: 'pair18',
+  player1: pToni,
+  player2: pIris,
+  wins: 0,
+  losses: 1,
+  position: 2,
+);
+
+// ───────────────────────── UPDATED LIGAS ─────────────────────────
 final Liga ligaPesoLigero = Liga(
   id: 'liga3',
   name: 'Liga Peso Ligero',
   level: 'Principiante',
   levelIcon: '⭐',
-  pairs: [],
+  pairs: [pairAlexClara, pairPabloLaura, pairDavidEva],
+  currentChallengerIndex: 0,
+);
+final Liga ligaPesoGallo = Liga(
+  id: 'liga4',
+  name: 'Liga Peso Gallo',
+  level: 'Principiante',
+  levelIcon: '🐓',
+  pairs: [pairSergioMarta, pairJorgeNuria],
+  currentChallengerIndex: 0,
+);
+final Liga ligaPesoMosca = Liga(
+  id: 'liga5',
+  name: 'Liga Peso Mosca',
+  level: 'Principiante',
+  levelIcon: '🪰',
+  pairs: [pairRaulSara, pairToniIris],
   currentChallengerIndex: 0,
 );
 
-final List<Liga> allLigas = [ligaPesoPesado, ligaPesoMedio, ligaPesoLigero];
+final List<Liga> allLigas = [
+  ligaPesoPesado,
+  ligaPesoMedio,
+  ligaPesoLigero,
+  ligaPesoGallo,
+  ligaPesoMosca,
+];
 
 // ───────────────────────── CHALLENGES ─────────────────────────
 final List<Challenge> mockChallenges = [

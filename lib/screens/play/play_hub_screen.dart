@@ -21,7 +21,7 @@ class PlayHubScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const HeroImagePanel(height: 230, imageUrl: kCourtImage),
+                    const HeroImagePanel(height: 230, imageUrl: kCourtImage, imageFit: BoxFit.contain),
                     const SizedBox(height: 22),
                     const Text(
                       'Elige cómo quieres jugar',

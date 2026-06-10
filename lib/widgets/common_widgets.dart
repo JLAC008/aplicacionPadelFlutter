@@ -350,7 +350,6 @@ class PadelHeader extends StatelessWidget {
       pinned: true,
       backgroundColor: kBg,
       title: Text(title),
-      leading: const Icon(Icons.menu, color: kTeal),
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
           fit: StackFit.expand,
@@ -382,12 +381,10 @@ class PadelHeader extends StatelessWidget {
 class AppTitleBar extends StatelessWidget {
   final String title;
   final bool showBack;
-  final VoidCallback? onMenuTap;
   const AppTitleBar({
     super.key,
     this.title = 'Padel Fighter League',
     this.showBack = false,
-    this.onMenuTap,
   });
 
   @override
@@ -398,12 +395,13 @@ class AppTitleBar extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(18, 12, 18, 8),
         child: Row(
           children: [
-            IconButton(
-              onPressed:
-                  showBack ? () => Navigator.pop(context) : onMenuTap ?? () {},
-              icon: Icon(showBack ? Icons.arrow_back_ios_new : Icons.menu,
-                  color: kTeal),
-            ),
+            if (showBack)
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back_ios_new, color: kTeal),
+              )
+            else
+              const SizedBox(width: 48),
             Expanded(
               child: Text(
                 title,
@@ -426,8 +424,13 @@ class AppTitleBar extends StatelessWidget {
 class HeroImagePanel extends StatelessWidget {
   final double height;
   final String imageUrl;
-  const HeroImagePanel(
-      {super.key, this.height = 190, this.imageUrl = kHeroPlayerImage});
+  final BoxFit imageFit;
+  const HeroImagePanel({
+    super.key,
+    this.height = 190,
+    this.imageUrl = kHeroPlayerImage,
+    this.imageFit = BoxFit.cover,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -444,7 +447,7 @@ class HeroImagePanel extends StatelessWidget {
         children: [
           LocalOrNetworkImage(
             source: imageUrl,
-            fit: BoxFit.cover,
+            fit: imageFit,
           ),
           DecoratedBox(
             decoration: BoxDecoration(

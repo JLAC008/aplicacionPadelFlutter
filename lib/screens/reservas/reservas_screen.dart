@@ -15,7 +15,7 @@ class ReservasScreenState extends State<ReservasScreen> {
   final List<Reserva> _misReservas = List.from(mockReservas);
   DateTime _selectedDate =
       _normalizeDate(DateTime.now().add(const Duration(days: 1)));
-  String? _selectedSlot;
+  final Set<String> _selectedSlots = {};
   final Set<String> _bookedSlots = {};
 
   static DateTime _normalizeDate(DateTime d) =>
@@ -63,7 +63,7 @@ class ReservasScreenState extends State<ReservasScreen> {
 
   void _openBookingSheet(Pista pista) {
     _selectedDate = _normalizeDate(DateTime.now().add(const Duration(days: 1)));
-    _selectedSlot = null;
+    _selectedSlots.clear();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -71,29 +71,32 @@ class ReservasScreenState extends State<ReservasScreen> {
       builder: (_) => _BookingSheet(
         pista: pista,
         selectedDate: _selectedDate,
-        selectedSlot: _selectedSlot,
+        selectedSlots: _selectedSlots,
         bookedSlots: _bookedSlots,
         dateLabel: _dateLabel,
         onDateChanged: (d) => setState(() => _selectedDate = d),
-        onSlotChanged: (s) => _selectedSlot = s,
         onConfirm: () => _confirmBooking(pista),
       ),
     );
   }
 
   void _confirmBooking(Pista pista) {
-    if (_selectedSlot == null) return;
-    final reserva = Reserva(
-      id: 'res_${DateTime.now().millisecondsSinceEpoch}',
-      pistaId: pista.id,
-      pistaName: pista.name,
-      date: _selectedDate,
-      timeSlot: _selectedSlot!,
-      reservedBy: currentUser.name,
-    );
+    if (_selectedSlots.isEmpty) return;
     setState(() {
-      _misReservas.insert(0, reserva);
-      _bookedSlots.add(_slotKey(_selectedDate, pista.id, _selectedSlot!));
+      for (final slot in _selectedSlots) {
+        _misReservas.insert(
+          0,
+          Reserva(
+            id: 'res_${DateTime.now().millisecondsSinceEpoch}_$slot',
+            pistaId: pista.id,
+            pistaName: pista.name,
+            date: _selectedDate,
+            timeSlot: slot,
+            reservedBy: currentUser.name,
+          ),
+        );
+        _bookedSlots.add(_slotKey(_selectedDate, pista.id, slot));
+      }
     });
     Navigator.pop(context);
     _showCheckmark();
@@ -122,8 +125,48 @@ class ReservasScreenState extends State<ReservasScreen> {
   }
 
   void _cancelReserva(Reserva r) {
-    setState(() => _misReservas.removeWhere((x) => x.id == r.id));
+    setState(() {
+      _misReservas.removeWhere((x) => x.id == r.id);
+      _bookedSlots.remove(_slotKey(r.date, r.pistaId, r.timeSlot));
+    });
   }
+
+  void _cancelGroup(List<Reserva> reservas) {
+    setState(() {
+      for (final r in reservas) {
+        _misReservas.removeWhere((x) => x.id == r.id);
+        _bookedSlots.remove(_slotKey(r.date, r.pistaId, r.timeSlot));
+      }
+    });
+  }
+
+  List<_ReservaGroup> _buildGroups() {
+    if (_misReservas.isEmpty) return [];
+    final sorted = List<Reserva>.from(_misReservas)
+      ..sort((a, b) {
+        final c = a.date.compareTo(b.date);
+        if (c != 0) return c;
+        return _startHour(a.timeSlot).compareTo(_startHour(b.timeSlot));
+      });
+    final groups = <_ReservaGroup>[];
+    _ReservaGroup? current;
+    for (final r in sorted) {
+      if (current == null ||
+          r.pistaId != current.pistaId ||
+          r.date != current.date ||
+          _startHour(r.timeSlot) != _endHour(current.reservas.last.timeSlot)) {
+        current = _ReservaGroup(date: r.date, pistaId: r.pistaId, pistaName: r.pistaName);
+        groups.add(current);
+      }
+      current.reservas.add(r);
+    }
+    return groups;
+  }
+
+  static int _startHour(String slot) =>
+      int.parse(slot.split(' - ').first.split(':').first);
+  static int _endHour(String slot) =>
+      int.parse(slot.split(' - ').last.split(':').first);
 
   @override
   Widget build(BuildContext context) {
@@ -149,11 +192,31 @@ class ReservasScreenState extends State<ReservasScreen> {
                             ),
                       ),
                       const SizedBox(height: 10),
-                      ...List.generate(_misReservas.length, (i) {
-                        final r = _misReservas[i];
-                        return _ReservaCard(
-                          reserva: r,
-                          onCancel: () => _cancelReserva(r),
+                      ...List.generate(_misReservas.isNotEmpty ? _buildGroups().length : 0, (i) {
+                        final g = _buildGroups()[i];
+                        if (g.reservas.length == 1) {
+                          final r = g.reservas.first;
+                          return _ReservaCard(
+                            reserva: r,
+                            onCancel: () => _cancelReserva(r),
+                          )
+                              .animate()
+                              .fadeIn(
+                                duration: 300.ms,
+                                delay: (80 * i).ms,
+                                curve: Curves.easeOutCubic,
+                              )
+                              .slideX(
+                                begin: 0.15,
+                                end: 0,
+                                duration: 300.ms,
+                                delay: (80 * i).ms,
+                                curve: Curves.easeOutCubic,
+                              );
+                        }
+                        return _ReservaGroupCard(
+                          group: g,
+                          onCancel: () => _cancelGroup(g.reservas),
                         )
                             .animate()
                             .fadeIn(
@@ -268,6 +331,109 @@ class _ReservaCard extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(reserva.timeSlot,
                     style: const TextStyle(color: kTeal, fontSize: 13)),
+              ],
+            ),
+          ),
+          InkWell(
+            borderRadius: BorderRadius.circular(20),
+            onTap: onCancel,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Text(
+                'Cancelar',
+                style: TextStyle(
+                    color: Color(0xFFFF6B6B),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReservaGroup {
+  final DateTime date;
+  final String pistaId;
+  final String pistaName;
+  final List<Reserva> reservas;
+  _ReservaGroup({
+    required this.date,
+    required this.pistaId,
+    required this.pistaName,
+    List<Reserva>? reservas,
+  }) : reservas = reservas ?? [];
+}
+
+class _ReservaGroupCard extends StatelessWidget {
+  final _ReservaGroup group;
+  final VoidCallback onCancel;
+  const _ReservaGroupCard({required this.group, required this.onCancel});
+
+  @override
+  Widget build(BuildContext context) {
+    final day = group.date.day.toString().padLeft(2, '0');
+    final month = [
+      'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+      'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+    ][group.date.month - 1];
+    final timeRange =
+        '${group.reservas.first.timeSlot.split(' - ').first} - ${group.reservas.last.timeSlot.split(' - ').last}';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: elegantCard(radius: 16, active: true),
+      child: Row(
+        children: [
+          Container(
+            width: 52,
+            height: 60,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [kGold, kGoldDark],
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(day,
+                    style: const TextStyle(
+                        color: kOnGold,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900)),
+                Text(month,
+                    style: const TextStyle(
+                        color: kOnGold,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700)),
+              ],
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(group.pistaName,
+                    style: const TextStyle(
+                        color: kTextPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800)),
+                const SizedBox(height: 3),
+                Text(timeRange,
+                    style: const TextStyle(color: kTeal, fontSize: 13)),
+                const SizedBox(height: 2),
+                Text('${group.reservas.length}h',
+                    style: const TextStyle(color: kTextSecondary, fontSize: 11)),
               ],
             ),
           ),
@@ -419,21 +585,19 @@ class _PistaCard extends StatelessWidget {
 class _BookingSheet extends StatefulWidget {
   final Pista pista;
   final DateTime selectedDate;
-  final String? selectedSlot;
+  final Set<String> selectedSlots;
   final Set<String> bookedSlots;
   final String dateLabel;
   final ValueChanged<DateTime> onDateChanged;
-  final ValueChanged<String?> onSlotChanged;
   final VoidCallback onConfirm;
 
   const _BookingSheet({
     required this.pista,
     required this.selectedDate,
-    required this.selectedSlot,
+    required this.selectedSlots,
     required this.bookedSlots,
     required this.dateLabel,
     required this.onDateChanged,
-    required this.onSlotChanged,
     required this.onConfirm,
   });
 
@@ -443,7 +607,6 @@ class _BookingSheet extends StatefulWidget {
 
 class _BookingSheetState extends State<_BookingSheet> {
   late DateTime _date;
-  String? _slot;
 
   static const _allSlots = [
     '09:00 - 10:00',
@@ -474,6 +637,7 @@ class _BookingSheetState extends State<_BookingSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final totalPrice = widget.selectedSlots.length * widget.pista.pricePerHour;
     final bottom = MediaQuery.of(context).viewInsets.bottom;
     return Container(
       padding: EdgeInsets.fromLTRB(20, 12, 20, 20 + bottom),
@@ -554,10 +718,9 @@ class _BookingSheetState extends State<_BookingSheet> {
                     onTap: () {
                       setState(() {
                         _date = d;
-                        _slot = null;
+                        widget.selectedSlots.clear();
                       });
                       widget.onDateChanged(d);
-                      widget.onSlotChanged(null);
                     },
                     child: AnimatedContainer(
                       duration: 200.ms,
@@ -587,7 +750,7 @@ class _BookingSheetState extends State<_BookingSheet> {
             ),
           ),
           const SizedBox(height: 16),
-          const Text('Selecciona hora',
+          const Text('Selecciona hora (pulsa varias para reservar consecutivas)',
               style: TextStyle(
                   color: kTextSecondary,
                   fontSize: 13,
@@ -597,14 +760,19 @@ class _BookingSheetState extends State<_BookingSheet> {
             spacing: 8,
             runSpacing: 8,
             children: _allSlots.map((slot) {
-              final isSelected = _slot == slot;
+              final isSelected = widget.selectedSlots.contains(slot);
               final booked = _isSlotBooked(slot);
               return GestureDetector(
                 onTap: booked
                     ? null
                     : () {
-                        setState(() => _slot = slot);
-                        widget.onSlotChanged(slot);
+                        setState(() {
+                          if (isSelected) {
+                            widget.selectedSlots.remove(slot);
+                          } else {
+                            widget.selectedSlots.add(slot);
+                          }
+                        });
                       },
                 child: AnimatedContainer(
                   duration: 200.ms,
@@ -643,12 +811,30 @@ class _BookingSheetState extends State<_BookingSheet> {
               );
             }).toList(),
           ),
+          if (widget.selectedSlots.isNotEmpty) ...[
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                const Icon(Icons.access_time, color: kTeal, size: 18),
+                const SizedBox(width: 6),
+                Text(
+                  '${widget.selectedSlots.length}h · ${totalPrice.toInt()}€',
+                  style: const TextStyle(
+                    color: kGold,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
+          ],
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
-              onPressed: _slot == null ? null : widget.onConfirm,
+              onPressed:
+                  widget.selectedSlots.isEmpty ? null : widget.onConfirm,
               style: ElevatedButton.styleFrom(
                 backgroundColor: kGold,
                 foregroundColor: kOnGold,
@@ -658,7 +844,8 @@ class _BookingSheetState extends State<_BookingSheet> {
                 textStyle:
                     const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
               ),
-              child: const Text('Confirmar Reserva'),
+              child: Text(
+                  widget.selectedSlots.isEmpty ? 'Selecciona hora' : 'Reservar (${widget.selectedSlots.length}h)'),
             ),
           ),
         ],

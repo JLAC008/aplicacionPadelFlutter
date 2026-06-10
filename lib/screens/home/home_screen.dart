@@ -116,7 +116,7 @@ class _HomeHero extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            const LocalOrNetworkImage(source: kHeroPlayerImage),
+            const LocalOrNetworkImage(source: kHeroPlayerImage, fit: BoxFit.contain),
             const DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(

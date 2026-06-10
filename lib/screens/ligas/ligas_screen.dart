@@ -44,13 +44,13 @@ class LigasScreen extends StatelessWidget {
                     _LigaCategory(
                       title: 'Peso Gallo',
                       trailingIcon: Icons.keyboard_arrow_down,
-                      liga: null,
+                      liga: ligaPesoGallo,
                     ),
                     _LigaCategory(
                       title: 'Mosca',
                       leadingIcon: Icons.directions_run,
                       trailingIcon: Icons.bug_report,
-                      liga: null,
+                      liga: ligaPesoMosca,
                     ),
                   ],
                 ),

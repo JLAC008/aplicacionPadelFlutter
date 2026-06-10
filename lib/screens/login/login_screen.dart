@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui' show ImageFilter;
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:shimmer/shimmer.dart';
 import '../../widgets/common_widgets.dart';
 import '../main_navigation.dart';
 
@@ -229,29 +228,25 @@ class _LoginScreenState extends State<LoginScreen>
                             duration: 500.ms,
                             curve: Curves.easeOutCubic),
                     const SizedBox(height: 24),
-                    Shimmer.fromColors(
-                      baseColor: kGold,
-                      highlightColor: const Color(0xFFFFE98A),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: ElevatedButton(
-                          onPressed: _login,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: kGold,
-                            foregroundColor: kOnGold,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 0,
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        onPressed: _login,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: kGold,
+                          foregroundColor: kOnGold,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
                           ),
-                          child: const Text(
-                            'INICIAR SESI\u00d3N',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              letterSpacing: 1,
-                            ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'INICIAR SESI\u00d3N',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            letterSpacing: 1,
                           ),
                         ),
                       ),

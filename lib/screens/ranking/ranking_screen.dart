@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../widgets/common_widgets.dart';
+import 'ranking_pair_screen.dart';
 import 'ranking_padel_band_screen.dart';
 import 'ranking_individual_screen.dart';
 
@@ -18,7 +19,7 @@ class RankingScreen extends StatelessWidget {
               const AppTitleBar(title: 'Ranking'),
               const Padding(
                 padding: EdgeInsets.fromLTRB(18, 10, 18, 0),
-                child: HeroImagePanel(height: 300),
+                child: HeroImagePanel(height: 300, imageFit: BoxFit.contain),
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(18, 22, 18, 0),
@@ -31,7 +32,12 @@ class RankingScreen extends StatelessWidget {
                         iconColor: kTeal,
                         title: 'Ranking por Pareja',
                         subtitle: 'Club Club',
-                        onTap: () => _showComingSoon(context),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) =>
+                                  const RankingPairScreen()),
+                        ),
                       ),
                       _RankingOptionCard(
                         icon: Icons.person_outline,
@@ -65,14 +71,6 @@ class RankingScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  void _showComingSoon(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-          content: const Text('Próximamente disponible'),
-          backgroundColor: kCard),
     );
   }
 }
